@@ -1,5 +1,5 @@
 body {
-    background-color: rgb(15, 14, 71);
+    background-color: rgb(244, 244, 250);
     text-align: center; 
 }
 
@@ -14,14 +14,14 @@ div {
     border-radius: 10px;
 }
 
-.box {
+/* .box {
     width: 500px;
     height: 500px;
     background-color: lightgray;
     justify-content: center;
 
 
-}
+} */
 
 .btn {
     padding: 10px 70px;
@@ -36,6 +36,36 @@ img {
     margin-top: 10px;
     width: 35px;    
 }
+h1 {
+    color: rgb(25, 28, 186);
+}
+
+.isCovered {
+    background-color: gray;
+}
+
+.center {
+    background-color: grey ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 250px;
+}
+.isCovered {
+    cursor: pointer;
+    border-style: outset;
+    border-width: 4px;
+    border-color: #ccc #999 #999 #ccc;
+}
+
+.isMarked {
+    border-style: inset;
+border-width: 4px;
+border-color: #999 #ccc #ccc #999;
+}
+
+    /* height: 100vh; גובה מלא של המסך} */
 
 /* position: relative;
 overflow: hidden;

@@ -1,21 +1,23 @@
-function Beginner(buildBoard){
-    var gLevel = {
-        SIZE: 8,
-        MINES: 3  
+function Beginner() {
+    
+        gLevel.SIZE = 8
+        gLevel.MINES = 6
+        onInit()
     }
 
-}
 
-function Advanced(buildBoard){
-    var gLevel = {
-        SIZE: 16,
-        MINES: 8  
-    }
-}
 
-function Professional(buildBoard){
-    var gLevel = {
-        SIZE: 32,
-        MINES: 12  
+function Advanced() { 
+        gLevel.SIZE = 10
+        gLevel.MINES = 10
+        onInit()
     }
-}
+
+
+function Professional() {
+   
+    gLevel.SIZE = 16
+    gLevel.MINES = 16
+    onInit()
+    }
+

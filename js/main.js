@@ -1,16 +1,19 @@
 'use strict'
 
 var gBoard = []
+var gCoveredMines = 0 
+
 var gLevel = {
-    SIZE: 8,
-    MINES: 3  
+    SIZE: 4,
+    MINES: 3
 }
 
 function onInit() {
+    gCoveredMines = gLevel.MINES 
     gBoard = buildBoard()
     console.log('gBoard :', gBoard)
     renderBoard()
-
+    updateMinesCounter() 
 }
 
 function buildBoard() {
@@ -28,10 +31,17 @@ function buildBoard() {
         }
     }
 
-    // bora[0][3].isMine = true
-    // bora[1][2].isMine = true
-    // bora[3][0].isMine = true
-    
+    var minePush = []
+    while (minePush.length < gLevel.MINES) {
+        var randRow = getRandomInt(0, gLevel.SIZE - 1)
+        var randCol = getRandomInt(0, gLevel.SIZE - 1)
+        var minePoint = `${randRow},${randCol}`
+
+        if (!minePush.includes(minePoint)) {
+            minePush.push(minePoint)
+            board[randRow][randCol].isMine = true
+        }
+    }
 
     for (var i = 0; i < gLevel.SIZE; i++) {
         for (var j = 0; j < gLevel.SIZE; j++) {
@@ -61,7 +71,10 @@ function renderBoard() {
         strHTML += '<tr>'
         for (var j = 0; j < gBoard[i].length; j++) {
             var className = 'isCovered'
-            strHTML += `<td class="${className}" id="${i},${j}" onclick="onCellClicked(this)"></td>`
+            strHTML += `<td class="${className}"
+                        " id="${i},${j}" 
+                        onclick="onCellClicked(this)">
+                        </td>`
         }
         strHTML += '</tr>'
     }
@@ -69,17 +82,20 @@ function renderBoard() {
 }
 
 function onCellClicked(elCell) {
+
     let [row, col] = elCell.id.split(',')
     row = +row
     col = +col
     const cell = gBoard[row][col]
-    
+
     if (cell.isCovered) {
         cell.isCovered = false
         elCell.classList.replace('isCovered', 'isUncovered')
-        
+
         if (cell.isMine) {
             elCell.innerHTML = `<img src="img/mine.png" alt="mine">`
+            gCoveredMines--; 
+            updateMinesCounter()
             gameOver()
         } else {
             elCell.innerText = cell.minesAroundCount > 0 ? cell.minesAroundCount : ''
@@ -94,23 +110,50 @@ function revealNeighbors(row, col) {
             if (i < 0 || j < 0 || i >= gLevel.SIZE || j >= gLevel.SIZE || (i === row && j === col)) continue
 
             const neighborCell = gBoard[i][j]
-            const neighborEl = document.getElementById(`${i},${j}`)
+            const elNeighbor = document.getElementById(`${i},${j}`)
 
             if (neighborCell.isCovered) {
                 neighborCell.isCovered = false
-                neighborEl.classList.replace('isCovered', 'isUncovered')
+                elNeighbor.classList.replace('isCovered', 'isUncovered')
                 if (neighborCell.isMine) {
-                    neighborEl.innerHTML = `<img src="img/mine.png" alt="mine">`
+                    elNeighbor.innerHTML = `<img src="img/mine.png" alt="mine">`
+                    gCoveredMines--; // אם נחשף מוקש בשכנים, גם הוא נחשב
+                    updateMinesCounter()
                 } else {
-                    neighborEl.innerText = neighborCell.minesAroundCount > 0 ? neighborCell.minesAroundCount : ''
+                    elNeighbor.innerText = neighborCell.minesAroundCount > 0 ? neighborCell.minesAroundCount : ''
                 }
             }
         }
     }
 }
 
+function updateMinesCounter() {
+    const minesCountElement = document.querySelector('.mines-count');
+    if (minesCountElement) {
+        minesCountElement.innerText = `Coverd mines: ${gCoveredMines}`;
+    } else {
+        console.log("null");
+    }
+}
+function revealBoard() {
+    for (let i = 0; i < gLevel.SIZE; i++) {
+        for (let j = 0; j < gLevel.SIZE; j++) {
+            const cell = gBoard[i][j]
+            const elCell = document.getElementById(`${i},${j}`)
+            if (cell.isMine) {
+                elCell.innerHTML = `<img src="img/mine.png" alt="mine">`
+            } else {
+                elCell.innerText = cell.minesAroundCount > 0 ? cell.minesAroundCount : ''
+            }
+            elCell.classList.replace('isCovered', 'isUncovered')
+        }
+    }
+}
+
 function gameOver() {
-    onInit() 
-    alert('Game Over!')
-   
+    revealBoard()
+    setTimeout(() => {
+        alert('Game Over')
+        onInit() 
+    }, 500)
 }

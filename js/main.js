@@ -3,13 +3,14 @@
 var gBoard = []
 var gLevel = {
     SIZE: 8,
-    MINES: 3  // יש 3 מוקשים
+    MINES: 3  
 }
 
 function onInit() {
     gBoard = buildBoard()
     console.log('gBoard :', gBoard)
     renderBoard()
+
 }
 
 function buildBoard() {
@@ -27,15 +28,10 @@ function buildBoard() {
         }
     }
 
-    const fixedMines = [
-        { row: 1, col: 0 },
-        { row: 2, col: 3 },
-        { row: 4, col: 5 }
-    ]
+    // bora[0][3].isMine = true
+    // bora[1][2].isMine = true
+    // bora[3][0].isMine = true
     
-    fixedMines.forEach(mine => {
-        board[mine.row][mine.col].isMine = true
-    })
 
     for (var i = 0; i < gLevel.SIZE; i++) {
         for (var j = 0; j < gLevel.SIZE; j++) {
@@ -76,7 +72,6 @@ function onCellClicked(elCell) {
     let [row, col] = elCell.id.split(',')
     row = +row
     col = +col
-
     const cell = gBoard[row][col]
     
     if (cell.isCovered) {
@@ -115,5 +110,7 @@ function revealNeighbors(row, col) {
 }
 
 function gameOver() {
+    onInit() 
     alert('Game Over!')
+   
 }

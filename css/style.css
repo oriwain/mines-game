@@ -34,7 +34,7 @@ h1 {
 }
 
 .center {
-    background-color: grey;
+    /* background-color: rgb(237, 16, 16); */
     border-collapse: collapse;
     margin: 0 auto;
 }
@@ -44,8 +44,10 @@ h1 {
     height: 35px;
     text-align: center;
     vertical-align: middle;
-    border: 1px solid #333;
-    box-sizing: border-box;
+    border: 1px solid #0000a0;
+    transition: transform 0.2s ease; /* הוספנו טרנזיציה ל-transform */
+
+    /* box-sizing: border-box; */
 }
 
 .isCovered, .isUncovered, .isMarked {
@@ -53,14 +55,14 @@ h1 {
     height: 35px;
     text-align: center;
     vertical-align: middle;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
 
 .isCovered {
-    background: #e0e0e0;
+    background: #6b6b6b;
 }
 
 .isCovered:hover {
@@ -71,17 +73,15 @@ h1 {
     background-color: rgb(200, 200, 200);
     pointer-events: none;
 }
-
-.isMarked {
-    background-color: rgb(211, 23, 20);
-    border: 2px solid #0d10d7;
-}
-
 img {
     width: 30px;
     height: 30px;
 }
 
-.row {
-    border: none;
+
+
+.center td.row:hover {
+    transform: scale(1.1); /* התא יגדל ב-10% */
+    z-index: 1; /* שומר שההגדלה לא תסתיר תאים אחרים */
 }
+

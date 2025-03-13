@@ -1,111 +1,119 @@
 'use strict'
 
-
-// gGame = { 
-//     isOn: false, 
-//     revealedCount: 0, 
-//     markedCount: 0, 
-//     secsPassed: 0 
-// } 
-
+var gBoard = []
 var gLevel = {
-    SIZE: 4,
-    MINES: 2
+    SIZE: 8,
+    MINES: 3  // יש 3 מוקשים
 }
 
-var gBoard = {
-    minesAroundCount: 0,
-    isCovered: true,
-    isMine: false,
-    isMarked: false
-}
-
-
-
-function onInit() { // Called when page loads
+function onInit() {
     gBoard = buildBoard()
     console.log('gBoard :', gBoard)
-    // console.table(gBoard);
-    renderBoard(gBoard)
+    renderBoard()
 }
 
-
-
-function buildBoard() {  // Builds the board   Set some mines Call setMinesNegsCount()Return the created board
-
-    // setMinesNegsCount()
-
+function buildBoard() {
     const board = []
 
     for (var i = 0; i < gLevel.SIZE; i++) {
         board[i] = []
         for (var j = 0; j < gLevel.SIZE; j++) {
-            // console.log('index:', i, j);
             board[i][j] = {
                 minesAroundCount: 0,
                 isCovered: true,
                 isMine: false,
                 isMarked: false
             }
-
-
         }
     }
 
-    board[2][2].isMine = true;
-    board[2][3].isMine = true;
+    const fixedMines = [
+        { row: 1, col: 0 },
+        { row: 2, col: 3 },
+        { row: 4, col: 5 }
+    ]
+    
+    fixedMines.forEach(mine => {
+        board[mine.row][mine.col].isMine = true
+    })
 
-    // console.table(board);
+    for (var i = 0; i < gLevel.SIZE; i++) {
+        for (var j = 0; j < gLevel.SIZE; j++) {
+            if (!board[i][j].isMine) {
+                board[i][j].minesAroundCount = countMinesAround(board, i, j)
+            }
+        }
+    }
+
     return board
-
 }
 
-function renderBoard(gBoard) {
-    var strHTML = ''
+function countMinesAround(board, row, col) {
+    let minesCount = 0
+    for (let i = row - 1; i <= row + 1; i++) {
+        for (let j = col - 1; j <= col + 1; j++) {
+            if (i < 0 || j < 0 || i >= gLevel.SIZE || j >= gLevel.SIZE) continue
+            if (board[i][j].isMine) minesCount++
+        }
+    }
+    return minesCount
+}
 
+function renderBoard() {
+    var strHTML = ''
     for (var i = 0; i < gBoard.length; i++) {
         strHTML += '<tr>'
-        for (var j = 0; j < gBoard[0].length; j++) {
-            const cell = gBoard[i][j]
-
-            var cellImg = "img/mine.png";
+        for (var j = 0; j < gBoard[i].length; j++) {
             var className = 'isCovered'
-
-            const row = `${i}`
-            const col = `${j}`
-
-            //  console.log('tdid:' ,tdId)
-            strHTML += `<td class="${className}"
-                             id="${row},${col}" 
-                             onclick="onCellClicked(this,${row},${col})"${cell}>
-                            <img src="${cellImg}" alt="">
-                        </td>`
+            strHTML += `<td class="${className}" id="${i},${j}" onclick="onCellClicked(this)"></td>`
         }
         strHTML += '</tr>'
     }
-    // console.log('strHTML:', cell)
-    const elMat = document.querySelector('.center')
-    elMat.innerHTML = strHTML
+    document.querySelector('.center tbody').innerHTML = strHTML
 }
 
-
-
-function onCellClicked(elCell, row, col) {  //Called when a cell is clicked
-    gBoard[row][col].isMarked = true;
-    gBoard[row][col].isCovered = false;
+function onCellClicked(elCell) {
+    let [row, col] = elCell.id.split(',')
+    row = +row
+    col = +col
 
     const cell = gBoard[row][col]
-
-if (cell.isMarked) { 
-    elCell.classList.replace('isCovered', 'isMarked');
-} else elCell.classList.replace('isMarked', 'isCovered');
-
-   
-    console.log('id:', elCell.id, ' i:', row, ' j:', col)
     
-    console.log('marked :', elCell.classList.isMarked)
-
-    console.log('gBoard :', gBoard)
+    if (cell.isCovered) {
+        cell.isCovered = false
+        elCell.classList.replace('isCovered', 'isUncovered')
+        
+        if (cell.isMine) {
+            elCell.innerHTML = `<img src="img/mine.png" alt="mine">`
+            gameOver()
+        } else {
+            elCell.innerText = cell.minesAroundCount > 0 ? cell.minesAroundCount : ''
+        }
+        revealNeighbors(row, col)
+    }
 }
 
+function revealNeighbors(row, col) {
+    for (let i = row - 1; i <= row + 1; i++) {
+        for (let j = col - 1; j <= col + 1; j++) {
+            if (i < 0 || j < 0 || i >= gLevel.SIZE || j >= gLevel.SIZE || (i === row && j === col)) continue
 
+            const neighborCell = gBoard[i][j]
+            const neighborEl = document.getElementById(`${i},${j}`)
+
+            if (neighborCell.isCovered) {
+                neighborCell.isCovered = false
+                neighborEl.classList.replace('isCovered', 'isUncovered')
+                if (neighborCell.isMine) {
+                    neighborEl.innerHTML = `<img src="img/mine.png" alt="mine">`
+                } else {
+                    neighborEl.innerText = neighborCell.minesAroundCount > 0 ? neighborCell.minesAroundCount : ''
+                }
+            }
+        }
+    }
+}
+
+function gameOver() {
+    alert('Game Over!')
+}
